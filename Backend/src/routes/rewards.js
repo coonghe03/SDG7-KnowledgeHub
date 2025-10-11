@@ -1,11 +1,22 @@
 import { Router } from 'express';
-const r = Router();
+import { getCoins } from '../store/memory.js';
 
-// Later: use DB per user; for now a demo response
+const r = Router();
+const TARGET = 50;
+const OFFSET_RS = 50;
+
+// GET /api/rewards/balance/:userId
 r.get('/balance/:userId', (req, res) => {
   const { userId } = req.params;
-  res.json({ userId, coins: 15, eligibleForBillOffset: 15 >= 50, pendingOffsetRs: 0 });
+  const coins = getCoins(userId);
+  const eligible = coins >= TARGET;
+  res.json({
+    userId,
+    coins,
+    eligibleForBillOffset: eligible,
+    targetCoins: TARGET,
+    rewardOffsetRs: OFFSET_RS
+  });
 });
 
 export default r;
-
