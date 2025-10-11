@@ -92,17 +92,6 @@ class ApiClient {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-    static Future<Map<String, dynamic>> askChatbot(String question) async {
-    final res = await http.post(
-      Uri.parse('$_base/chatbot/ask'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'question': question}),
-    );
-    if (res.statusCode != 200) {
-      throw Exception('Chatbot error: ${res.statusCode}');
-    }
-    return jsonDecode(res.body) as Map<String, dynamic>;
-  }
-
+  static Future askChatbot(String q) async {}
 
 }

@@ -2,20 +2,25 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'core/api_client.dart';
+// Core
 import 'core/app_theme.dart';
+import 'core/api_client.dart';
 
+// Features
 import 'features/videos/videos_page.dart';
 import 'features/articles_news/articles_page.dart';
 import 'features/quizzes/quizzes_page.dart';
+import 'features/chatbot/chatbot_page.dart';
 import 'features/rewards/rewards_page.dart';
 import 'features/billing/bill_upload_page.dart';
-import 'features/chatbot/chatbot_page.dart';
 
 void main() {
   runApp(const SDG7App());
 }
 
+// ------------------------------------------------------------
+// Router setup
+// ------------------------------------------------------------
 final _router = GoRouter(
   routes: [
     GoRoute(path: '/', builder: (_, __) => const HomePage()),
@@ -28,6 +33,9 @@ final _router = GoRouter(
   ],
 );
 
+// ------------------------------------------------------------
+// Root widget
+// ------------------------------------------------------------
 class SDG7App extends StatelessWidget {
   const SDG7App({super.key});
 
@@ -36,23 +44,27 @@ class SDG7App extends StatelessWidget {
     return MaterialApp.router(
       title: 'SDG7 Knowledge Hub',
       routerConfig: _router,
-      theme: AppTheme.light, // use the shared theme
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light, // unified theme from core/app_theme.dart
     );
   }
 }
 
+// ------------------------------------------------------------
+// Home page with quick links & health check
+// ------------------------------------------------------------
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final items = <(String, String, IconData)>[
-      ('/videos', 'Educational Videos', Icons.play_circle_outline),
-      ('/articles', 'Articles & Daily News', Icons.article_outlined),
-      ('/quizzes', 'Interactive Quizzes', Icons.quiz_outlined),
-      ('/chatbot', 'Chatbot Support', Icons.smart_toy_outlined),
-      ('/rewards', 'Rewards & Coins', Icons.workspace_premium_outlined),
-      ('/billing', 'Upload Electricity Bill', Icons.upload_file),
+    final items = [
+      ('/videos', Icons.play_circle_outline, 'Educational Videos'),
+      ('/articles', Icons.article_outlined, 'Articles & Daily News'),
+      ('/quizzes', Icons.quiz_outlined, 'Interactive Quizzes'),
+      ('/chatbot', Icons.chat_bubble_outline, 'Chatbot Support'),
+      ('/rewards', Icons.card_giftcard_outlined, 'Rewards & Coins'),
+      ('/billing', Icons.upload_file_outlined, 'Upload Electricity Bill'),
     ];
 
     return Scaffold(
@@ -64,40 +76,27 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.wifi_tethering),
             onPressed: () async {
               final ok = await ApiClient.health();
-              final msg = ok ? 'API OK ✅' : 'API not reachable ❌';
               // ignore: use_build_context_synchronously
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(ok ? '✅ API Connected' : '❌ API not reachable'),
+                ),
+              );
             },
           ),
-          const SizedBox(width: 4),
         ],
       ),
-      body: GridView.builder(
+      body: ListView.separated(
         padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.2,
-        ),
         itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (context, i) {
-          final (route, label, icon) = items[i];
-          return InkWell(
-            onTap: () => context.go(route),
-            borderRadius: BorderRadius.circular(16),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(icon, size: 38),
-                    const SizedBox(height: 12),
-                    Text(label, textAlign: TextAlign.center),
-                  ],
-                ),
-              ),
+          final (route, icon, label) = items[i];
+          return Card(
+            child: ListTile(
+              leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+              title: Text(label),
+              onTap: () => context.go(route),
             ),
           );
         },

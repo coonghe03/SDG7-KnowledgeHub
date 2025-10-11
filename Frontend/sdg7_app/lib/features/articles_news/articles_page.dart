@@ -60,7 +60,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
                   onPressed: _search,
                   icon: const Icon(Icons.search),
                   label: const Text('Search'),
-                ),
+                )
               ],
             ),
           ),
@@ -72,27 +72,11 @@ class _ArticlesPageState extends State<ArticlesPage> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snap.hasError) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        'Couldn’t load articles.\nPlease check your connection and try again.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
+                  return Center(child: Text('Error: ${snap.error}'));
                 }
                 final data = snap.data ?? [];
                 if (data.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        'No articles found.\nTry a different search or check again later.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
+                  return const Center(child: Text('No articles found'));
                 }
                 return RefreshIndicator(
                   onRefresh: _refresh,
@@ -116,6 +100,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
                           if (await canLaunchUrl(uri)) {
                             await launchUrl(uri, mode: LaunchMode.externalApplication);
                           } else {
+                            // fallback open in webview/tab
                             await launchUrl(uri);
                           }
                         },
