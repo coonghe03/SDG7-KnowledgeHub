@@ -96,7 +96,8 @@ class HomePage extends StatelessWidget {
             child: ListTile(
               leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
               title: Text(label),
-              onTap: () => context.go(route),
+              // ✅ Use push() so Android Back navigates properly
+              onTap: () => context.push(route),
             ),
           );
         },
